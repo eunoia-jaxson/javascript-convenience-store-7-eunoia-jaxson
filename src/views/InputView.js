@@ -1,13 +1,17 @@
 import { Console } from '@woowacourse/mission-utils';
 import fs from 'fs';
 import ProductConverter from '../model/ProductConverter.js';
+import { SYSTEM_MESSAGES } from '../constants/constants.js';
 
 const InputView = {
   async readItem() {
-    const input = await Console.readLineAsync(
-      '구매하실 상품명과 수량을 입력해 주세요. (예: [사이다-2],[감자칩-1])',
-    );
-    return input;
+    try {
+      const input = await Console.readLineAsync(SYSTEM_MESSAGES.ENTER_PRODUCT_AND_QUANTITY);
+      return input;
+    } catch (error) {
+      Console.print(error.message);
+      return this.readItem();
+    }
   },
 
   async readProductsFromFile() {
