@@ -3,14 +3,18 @@ import { Console } from '@woowacourse/mission-utils';
 import { SYSTEM_MESSAGES } from '../constants/constants.js';
 
 const OutputView = {
+  print(message) {
+    Console.print(message);
+  },
+
   welcome() {
-    Console.print(SYSTEM_MESSAGES.WELCOME);
-    Console.print(SYSTEM_MESSAGES.AVAILABLE_PRODUCTS);
+    this.print(SYSTEM_MESSAGES.WELCOME);
+    this.print(SYSTEM_MESSAGES.AVAILABLE_PRODUCTS);
   },
 
   async printProducts(products) {
     products.forEach((product) => {
-      Console.print(product.toString());
+      this.print(product.toString());
     });
   },
   // ...

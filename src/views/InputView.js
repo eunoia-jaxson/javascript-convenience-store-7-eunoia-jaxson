@@ -5,13 +5,8 @@ import { SYSTEM_MESSAGES } from '../constants/constants.js';
 
 const InputView = {
   async readItem() {
-    try {
-      const input = await Console.readLineAsync(SYSTEM_MESSAGES.ENTER_PRODUCT_AND_QUANTITY);
-      return input;
-    } catch (error) {
-      Console.print(error.message);
-      return this.readItem();
-    }
+    const input = await Console.readLineAsync(SYSTEM_MESSAGES.ENTER_PRODUCT_AND_QUANTITY);
+    return input;
   },
 
   async readProductsFromFile() {
