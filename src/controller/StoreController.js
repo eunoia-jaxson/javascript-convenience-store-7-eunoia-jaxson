@@ -3,28 +3,35 @@ import OutputView from '../views/OutputView.js';
 import StoreService from '../service/StoreService.js';
 
 class StoreController {
-  #productList;
-  #orderList;
-
-  constructor() {
-    this.#productList = [];
-    this.#orderList = [];
-  }
-
   async start() {
     OutputView.welcome();
-    this.#productList = await InputView.readProductsFromFile();
-    OutputView.printProducts(this.#productList);
+    StoreService.setProductList(await InputView.readProductsFromFile());
+    OutputView.printProducts(StoreService.getProductList());
     await this.#enterInputs();
   }
 
   async #enterInputs() {
+    await this.#enterOrder();
+    await this.#enterIncludeUnmetPromotionQuantity();
+  }
+
+  async #enterOrder() {
     try {
       const orderInput = await InputView.readItem();
-      this.#orderList = StoreService.validateOrderInput(orderInput, this.#productList);
+      const orderList = StoreService.validateOrderInput(orderInput);
+      StoreService.setOrderList(orderList);
     } catch (error) {
       OutputView.print(error.message);
-      await this.#enterInputs();
+      await this.#enterOrder();
+    }
+  }
+
+  async #enterIncludeUnmetPromotionQuantity() {
+    try {
+      StoreService.getUnmetPromotionQuantity();
+    } catch (error) {
+      OutputView.print(error.message);
+      await this.#enterIncludeUnmetPromotionQuantity();
     }
   }
 }

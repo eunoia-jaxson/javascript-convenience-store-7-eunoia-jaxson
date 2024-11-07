@@ -1,6 +1,5 @@
 import { Console } from '@woowacourse/mission-utils';
 import fs from 'fs';
-import ProductConverter from '../model/ProductConverter.js';
 import { SYSTEM_MESSAGES } from '../constants/constants.js';
 
 const InputView = {
@@ -10,8 +9,12 @@ const InputView = {
   },
 
   async readProductsFromFile() {
-    const products = fs.readFileSync('public/products.md').toString().split('\n');
-    return ProductConverter.convertProductsList(products.slice(1, -1));
+    return fs.readFileSync('public/products.md').toString().split('\n');
+  },
+
+  async readIncludeUnmetPromotionQuantity(productName) {
+    const input = await Console.readLineAsync(SYSTEM_MESSAGES.PROMOTION_ELIGIBILITY(productName));
+    return input;
   },
 };
 

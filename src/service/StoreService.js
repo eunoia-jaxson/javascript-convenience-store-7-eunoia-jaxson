@@ -1,17 +1,41 @@
+import { DateTimes } from '@woowacourse/mission-utils';
 import validator from '../util/validator.js';
+import ProductConverter from '../model/ProductConverter.js';
 
 class StoreService {
-  validateOrderInput(orderInput, productList) {
-    validator.invalidFormat(orderInput);
-    const orderList = this.preprocessingOrderList(orderInput);
+  #productList;
+  #orderList;
+  #today;
 
-    const productNames = productList.map((product) => product.getInformation().name);
+  constructor() {
+    this.#productList = [];
+    this.#orderList = [];
+    this.#today = DateTimes.now();
+  }
+
+  setProductList(products) {
+    this.#productList = ProductConverter.convertProductsList(products.slice(1, -1));
+  }
+
+  getProductList() {
+    return this.#productList;
+  }
+
+  setOrderList(orders) {
+    this.#orderList = orders;
+  }
+
+  validateOrderInput(orderInput) {
+    validator.invalidFormat(orderInput);
+    const orderList = this.#preprocessingOrderList(orderInput);
+    const productNames = this.#productList.map((product) => product.getInformation().name);
     validator.productNotfound(orderList, productNames);
-    validator.stockExceeded(this.#isStockExceeded(orderList, productList));
+    validator.quantityMoreThanZero(orderList);
+    validator.stockExceeded(this.#isStockExceeded(orderList, this.#productList));
     return orderList;
   }
 
-  preprocessingOrderList(orderInput) {
+  #preprocessingOrderList(orderInput) {
     return orderInput.split(',').map((rawOrder) => {
       const order = rawOrder.split('-');
       return {
@@ -32,6 +56,8 @@ class StoreService {
       );
       return stock < order.quantity;
     });
+
+  getUnmetPromotionQuantity() {}
 }
 
 export default new StoreService();

@@ -19,6 +19,12 @@ const validator = Object.freeze({
       throw new Error(ERROR_MESSAGES.STOCK_EXCEEDED);
     }
   },
+
+  quantityMoreThanZero(orderList) {
+    if (orderList.some((order) => order.quantity <= 0)) {
+      throw new Error(ERROR_MESSAGES.INVALID_INPUT);
+    }
+  },
 });
 
 export default validator;
