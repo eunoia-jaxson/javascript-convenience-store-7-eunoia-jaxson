@@ -13,7 +13,8 @@ class StoreController {
 
   async #enterInputs() {
     await this.#enterOrder();
-    await this.enterIncludeUnmetPromotionQuantity();
+    await this.confirmIncludeUnmetPromotionQuantity();
+    await this.confirmRegularPricePayment();
   }
 
   async #enterOrder() {
@@ -27,7 +28,7 @@ class StoreController {
     }
   }
 
-  async enterIncludeUnmetPromotionQuantity() {
+  async confirmIncludeUnmetPromotionQuantity() {
     try {
       const unmetPromotionQuantitys = StoreService.getUnmetPromotionQuantity();
       for (let i = 0; i < unmetPromotionQuantitys.length; i++) {
@@ -38,7 +39,22 @@ class StoreController {
       }
     } catch (error) {
       OutputView.print(error.message);
-      this.enterIncludeUnmetPromotionQuantity();
+      this.confirmIncludeUnmetPromotionQuantity();
+    }
+  }
+
+  async confirmRegularPricePayment() {
+    try {
+      const regularPriceProducts = StoreService.getRegularPricePaymentProducts();
+      for (let i = 0; i < regularPriceProducts.length; i++) {
+        const regularPricePayment = await InputView.readRegularPricePayment(
+          regularPriceProducts[i],
+        );
+        await StoreService.handleRegularPricePayment(regularPricePayment, regularPriceProducts[i]);
+      }
+    } catch (error) {
+      OutputView.print(error.message);
+      this.confirmRegularPricePayment();
     }
   }
 }

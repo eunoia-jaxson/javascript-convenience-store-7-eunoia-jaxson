@@ -20,6 +20,13 @@ const InputView = {
     const input = await Console.readLineAsync(SYSTEM_MESSAGES.PROMOTION_ELIGIBILITY(productName));
     return input;
   },
+
+  async readRegularPricePayment(regularPricePayment) {
+    const input = await Console.readLineAsync(
+      SYSTEM_MESSAGES.PROMOTION_OUT_OF_STOCK(regularPricePayment[0], regularPricePayment[1]),
+    );
+    return input;
+  },
 };
 
 export default InputView;

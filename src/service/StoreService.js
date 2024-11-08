@@ -34,7 +34,15 @@ class StoreService {
   }
 
   setOrderList(orders) {
-    this.#orderList = orders;
+    this.#orderList = orders.map((order) => {
+      const orderProduct = this.#productList.find((product) => product.getName() === order.name);
+      return {
+        name: order.name,
+        unitPrice: orderProduct.getUnitPrice(),
+        quantity: order.quantity,
+        promotion: orderProduct.getPromotion(),
+      };
+    });
   }
 
   validateOrderInput(orderInput) {
@@ -67,6 +75,7 @@ class StoreService {
   getUnmetPromotionQuantity() {
     return this.#orderList.filter((order) => {
       const orderProduct = Product.findOrderProduct(this.#productList, order.name);
+      if (orderProduct === undefined) return false;
       const productPromotion = Promotion.findProductPromotion(this.#promotionList, orderProduct);
       return (
         order.quantity < orderProduct.getStockQuantity() &&
@@ -79,6 +88,42 @@ class StoreService {
     if (includeUnmet === 'N') return;
     if (includeUnmet === 'Y') {
       this.#orderList.find((order) => order.name === unmetOrder.name).quantity += 1;
+      return;
+    }
+    validator.invalidCharacter();
+  }
+
+  getRegularPricePaymentProducts() {
+    const regularPricePaymentProducts = this.#orderList.filter((order) => {
+      const orderProduct = Product.findOrderProduct(this.#productList, order.name);
+      if (orderProduct === undefined) return false;
+      const productPromotion = Promotion.findProductPromotion(this.#promotionList, orderProduct);
+      return (
+        order.quantity / (productPromotion.getBuy() + 1) >
+        Math.floor(orderProduct.getStockQuantity() / (productPromotion.getBuy() + 1))
+      );
+    });
+    return this.regularPricePayment(regularPricePaymentProducts);
+  }
+
+  regularPricePayment(regularPricePaymentProducts) {
+    return regularPricePaymentProducts.map((product) => {
+      const orderProduct = Product.findOrderProduct(this.#productList, product.name);
+      if (orderProduct === undefined) return false;
+      const productPromotion = Promotion.findProductPromotion(this.#promotionList, orderProduct);
+      const regularPricePaymentAmount =
+        product.quantity -
+        (orderProduct.getStockQuantity() -
+          (orderProduct.getStockQuantity() % (productPromotion.getBuy() + 1)));
+      return [product.name, regularPricePaymentAmount];
+    });
+  }
+
+  async handleRegularPricePayment(regularPricePayment, regularPricePaymentProducts) {
+    if (regularPricePayment === 'Y') return;
+    if (regularPricePayment === 'N') {
+      this.#orderList.find((order) => order.name === regularPricePaymentProducts[0]).quantity -=
+        regularPricePaymentProducts[1];
       return;
     }
     validator.invalidCharacter();
