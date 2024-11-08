@@ -25,6 +25,10 @@ const validator = Object.freeze({
       throw new Error(ERROR_MESSAGES.INVALID_INPUT);
     }
   },
+
+  invalidCharacter() {
+    throw new Error(ERROR_MESSAGES.INVALID_INPUT);
+  },
 });
 
 export default validator;

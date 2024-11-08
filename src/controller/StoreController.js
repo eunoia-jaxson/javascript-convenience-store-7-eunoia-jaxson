@@ -6,13 +6,14 @@ class StoreController {
   async start() {
     OutputView.welcome();
     StoreService.setProductList(await InputView.readProductsFromFile());
+    StoreService.setPromotionList(await InputView.readPromotionsFromFile());
     OutputView.printProducts(StoreService.getProductList());
     await this.#enterInputs();
   }
 
   async #enterInputs() {
     await this.#enterOrder();
-    await this.#enterIncludeUnmetPromotionQuantity();
+    await this.enterIncludeUnmetPromotionQuantity();
   }
 
   async #enterOrder() {
@@ -22,16 +23,22 @@ class StoreController {
       StoreService.setOrderList(orderList);
     } catch (error) {
       OutputView.print(error.message);
-      await this.#enterOrder();
+      this.#enterOrder();
     }
   }
 
-  async #enterIncludeUnmetPromotionQuantity() {
+  async enterIncludeUnmetPromotionQuantity() {
     try {
-      StoreService.getUnmetPromotionQuantity();
+      const unmetPromotionQuantitys = StoreService.getUnmetPromotionQuantity();
+      for (let i = 0; i < unmetPromotionQuantitys.length; i++) {
+        const includeUnmet = await InputView.readIncludeUnmetPromotionQuantity(
+          unmetPromotionQuantitys[i].name,
+        );
+        await StoreService.handleIncludeUnmet(includeUnmet, unmetPromotionQuantitys[i]);
+      }
     } catch (error) {
       OutputView.print(error.message);
-      await this.#enterIncludeUnmetPromotionQuantity();
+      this.enterIncludeUnmetPromotionQuantity();
     }
   }
 }

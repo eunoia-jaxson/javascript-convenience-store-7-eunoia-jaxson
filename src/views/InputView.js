@@ -12,6 +12,10 @@ const InputView = {
     return fs.readFileSync('public/products.md').toString().split('\n');
   },
 
+  async readPromotionsFromFile() {
+    return fs.readFileSync('public/promotions.md').toString().split('\n');
+  },
+
   async readIncludeUnmetPromotionQuantity(productName) {
     const input = await Console.readLineAsync(SYSTEM_MESSAGES.PROMOTION_ELIGIBILITY(productName));
     return input;
