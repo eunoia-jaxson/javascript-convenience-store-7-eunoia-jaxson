@@ -14,7 +14,15 @@ const OutputView = {
 
   async printProducts(products) {
     products.forEach((product) => {
-      this.print(product.toString());
+      if (product.stockQuantity === 0) {
+        this.print(
+          `- ${product.name} ${product.unitPrice.toLocaleString()}원 재고 없음 ${product.promotion}`,
+        );
+        return;
+      }
+      this.print(
+        `- ${product.name} ${product.unitPrice.toLocaleString()}원 ${product.stockQuantity.toLocaleString()}개 ${product.promotion}`,
+      );
     });
   },
   // ...

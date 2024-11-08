@@ -2,8 +2,6 @@ import { DateTimes } from '@woowacourse/mission-utils';
 import validator from '../util/validator.js';
 import ProductConverter from '../models/ProductConverter.js';
 import PromotionConverter from '../models/PromotionConverter.js';
-import Product from '../models/Product.js';
-import Promotion from '../models/Promotion.js';
 
 class StoreService {
   #productList;
@@ -35,12 +33,12 @@ class StoreService {
 
   setOrderList(orders) {
     this.#orderList = orders.map((order) => {
-      const orderProduct = this.#productList.find((product) => product.getName() === order.name);
+      const orderProduct = this.#productList.find((product) => product.name === order.name);
       return {
         name: order.name,
-        unitPrice: orderProduct.getUnitPrice(),
+        unitPrice: orderProduct.unitPrice,
         quantity: order.quantity,
-        promotion: orderProduct.getPromotion(),
+        promotion: orderProduct.promotion,
       };
     });
   }
@@ -48,7 +46,7 @@ class StoreService {
   validateOrderInput(orderInput) {
     validator.invalidFormat(orderInput);
     const orderList = this.#preprocessingOrderList(orderInput);
-    const productNames = this.#productList.map((product) => product.getName());
+    const productNames = this.#productList.map((product) => product.name);
     validator.productNotfound(orderList, productNames);
     validator.quantityMoreThanZero(orderList);
     validator.stockExceeded(this.#isStockExceeded(orderList, this.#productList));
@@ -67,21 +65,31 @@ class StoreService {
 
   #isStockExceeded = (orderList, productList) =>
     orderList.some((order) => {
-      const products = productList.filter((product) => product.getName() === order.name);
-      const stock = products.reduce((acc, product) => acc + product.getStockQuantity(), 0);
+      const products = productList.filter((product) => product.name === order.name);
+      const stock = products.reduce((acc, product) => acc + product.stockQuantity, 0);
       return stock < order.quantity;
     });
 
   getUnmetPromotionQuantity() {
     return this.#orderList.filter((order) => {
-      const orderProduct = Product.findOrderProduct(this.#productList, order.name);
-      if (orderProduct === undefined) return false;
-      const productPromotion = Promotion.findProductPromotion(this.#promotionList, orderProduct);
+      const [orderProduct, productPromotion] = this.#preprocessingFilter(order.name);
+      if (orderProduct === null) return false;
       return (
-        order.quantity < orderProduct.getStockQuantity() &&
-        order.quantity % (productPromotion.getBuy() + 1) === productPromotion.getBuy()
+        order.quantity < orderProduct.stockQuantity &&
+        order.quantity % (productPromotion.buy + 1) === productPromotion.buy
       );
     });
+  }
+
+  #preprocessingFilter(orderName) {
+    const orderProduct = this.#productList.find(
+      (product) => product.promotion !== '' && product.name === orderName,
+    );
+    if (orderProduct === undefined) return [null];
+    const productPromotion = this.#promotionList.find(
+      (promotion) => promotion.name === orderProduct.promotion,
+    );
+    return [orderProduct, productPromotion];
   }
 
   async handleIncludeUnmet(includeUnmet, unmetOrder) {
@@ -95,27 +103,24 @@ class StoreService {
 
   getRegularPricePaymentProducts() {
     const regularPricePaymentProducts = this.#orderList.filter((order) => {
-      const orderProduct = Product.findOrderProduct(this.#productList, order.name);
-      if (orderProduct === undefined) return false;
-      const productPromotion = Promotion.findProductPromotion(this.#promotionList, orderProduct);
+      const [orderProduct, productPromotion] = this.#preprocessingFilter(order.name);
+      if (orderProduct === null) return false;
       return (
-        order.quantity / (productPromotion.getBuy() + 1) >
-        Math.floor(orderProduct.getStockQuantity() / (productPromotion.getBuy() + 1))
+        order.quantity / (productPromotion.buy + 1) >
+        Math.floor(orderProduct.stockQuantity / (productPromotion.buy + 1))
       );
     });
     return this.regularPricePayment(regularPricePaymentProducts);
   }
 
   regularPricePayment(regularPricePaymentProducts) {
-    return regularPricePaymentProducts.map((product) => {
-      const orderProduct = Product.findOrderProduct(this.#productList, product.name);
-      if (orderProduct === undefined) return false;
-      const productPromotion = Promotion.findProductPromotion(this.#promotionList, orderProduct);
-      const regularPricePaymentAmount =
-        product.quantity -
-        (orderProduct.getStockQuantity() -
-          (orderProduct.getStockQuantity() % (productPromotion.getBuy() + 1)));
-      return [product.name, regularPricePaymentAmount];
+    return regularPricePaymentProducts.map((order) => {
+      const [orderProduct, productPromotion] = this.#preprocessingFilter(order.name);
+      if (orderProduct === null) return false;
+      const regularPriceAmount =
+        order.quantity -
+        (orderProduct.stockQuantity - (orderProduct.stockQuantity % (productPromotion.buy + 1)));
+      return [order.name, regularPriceAmount];
     });
   }
 
