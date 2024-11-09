@@ -1,6 +1,7 @@
 import StoreController from '../src/controller/StoreController.js';
 import InputView from '../src/views/InputView.js';
 import StoreService from '../src/service/StoreService.js';
+import OrderProduct from '../src/models/OrderProduct.js'; // OrderProduct 클래스를 가져옴
 
 jest.mock('../src/views/InputView.js');
 jest.mock('../src/service/StoreService.js');
@@ -12,14 +13,14 @@ describe('StoreController - confirmIncludeUnmetPromotionQuantity', () => {
 
   test.each([
     {
-      unmetPromotions: [{ name: '사이다', quantity: 2 }],
+      unmetPromotions: [new OrderProduct('사이다', 1000, 2, '탄산2+1')],
       userResponses: ['Y'],
       description: '사용자가 추가 프로모션 수량을 포함시키는 경우, 추가한다.',
     },
     {
       unmetPromotions: [
-        { name: '초코바', quantity: 3 },
-        { name: '사이다', quantity: 2 },
+        new OrderProduct('초코바', 1500, 3, 'MD추천상품'),
+        new OrderProduct('사이다', 1000, 2, '탄산2+1'),
       ],
       userResponses: ['N', 'Y'],
       description:
@@ -50,11 +51,12 @@ describe('StoreController - confirmIncludeUnmetPromotionQuantity', () => {
   });
 
   test('프로모션 처리 중 오류 발생 시 재시도한다.', async () => {
-    const unmetPromotions = [{ name: '사이다', quantity: 2 }];
+    const unmetPromotions = [new OrderProduct('사이다', 1000, 2, '탄산2+1')];
     StoreService.getUnmetPromotionQuantity.mockReturnValue(unmetPromotions);
 
     // Mock an error during processing
-    InputView.readIncludeUnmetPromotionQuantity.mockRejectedValueOnce('YES');
+    InputView.readIncludeUnmetPromotionQuantity.mockRejectedValueOnce(new Error('Test error'));
+    InputView.readIncludeUnmetPromotionQuantity.mockRejectedValueOnce(new Error('Test error'));
 
     // Mock successful retry input
     InputView.readIncludeUnmetPromotionQuantity.mockResolvedValueOnce('Y');
@@ -62,7 +64,7 @@ describe('StoreController - confirmIncludeUnmetPromotionQuantity', () => {
     await StoreController.confirmIncludeUnmetPromotionQuantity();
 
     // Check that it retried the input after error
-    expect(InputView.readIncludeUnmetPromotionQuantity).toHaveBeenCalledTimes(2);
+    expect(InputView.readIncludeUnmetPromotionQuantity).toHaveBeenCalledTimes(3);
     expect(StoreService.handleIncludeUnmet).toHaveBeenCalledTimes(1);
   });
 });

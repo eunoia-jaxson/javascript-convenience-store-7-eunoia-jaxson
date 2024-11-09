@@ -1,6 +1,7 @@
 import StoreController from '../src/controller/StoreController.js';
 import InputView from '../src/views/InputView.js';
 import StoreService from '../src/service/StoreService.js';
+import OrderProduct from '../src/models/OrderProduct.js'; // OrderProduct 클래스를 가져옴
 
 jest.mock('../src/views/InputView.js');
 jest.mock('../src/service/StoreService.js');
@@ -12,14 +13,14 @@ describe('StoreController - confirmRegularPricePayment', () => {
 
   test.each([
     {
-      regularPriceProducts: [{ name: '사이다', quantity: 8 }],
+      regularPriceProducts: [new OrderProduct('사이다', 1000, 8, '탄산2+1')],
       userResponses: ['Y'],
       description: '사용자가 정가 결제를 수락하는 경우, 정가 결제한다.',
     },
     {
       regularPriceProducts: [
-        { name: '콜라', quantity: 12 },
-        { name: '사이다', quantity: 7 },
+        new OrderProduct('콜라', 1200, 12, '탄산2+1'),
+        new OrderProduct('사이다', 1000, 7, '탄산2+1'),
       ],
       userResponses: ['N', 'Y'],
       description:
@@ -48,11 +49,12 @@ describe('StoreController - confirmRegularPricePayment', () => {
   });
 
   test('정가 결제 처리 중 오류 발생 시 재시도한다.', async () => {
-    const regularPriceProducts = [{ name: '사이다', quantity: 9 }];
+    const regularPriceProducts = [new OrderProduct('사이다', 1000, 9, '탄산2+1')];
     StoreService.getRegularPricePaymentProducts.mockReturnValue(regularPriceProducts);
 
     // Mock an error during processing
-    InputView.readRegularPricePayment.mockRejectedValueOnce('YES');
+    InputView.readRegularPricePayment.mockRejectedValueOnce(new Error('Test error'));
+    InputView.readRegularPricePayment.mockRejectedValueOnce(new Error('Test error'));
 
     // Mock successful retry input
     InputView.readRegularPricePayment.mockResolvedValueOnce('Y');
@@ -60,7 +62,7 @@ describe('StoreController - confirmRegularPricePayment', () => {
     await StoreController.confirmRegularPricePayment();
 
     // Check that it retried the input after error
-    expect(InputView.readRegularPricePayment).toHaveBeenCalledTimes(2);
+    expect(InputView.readRegularPricePayment).toHaveBeenCalledTimes(3);
     expect(StoreService.handleRegularPricePayment).toHaveBeenCalledTimes(1);
   });
 });
