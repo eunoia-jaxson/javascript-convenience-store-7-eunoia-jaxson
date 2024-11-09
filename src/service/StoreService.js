@@ -9,12 +9,14 @@ class StoreService {
   #orders;
   #today;
   #promotions;
+  #membershipDiscount;
 
   constructor() {
     this.#products = [];
     this.#orders = [];
     this.#today = DateTimes.now();
     this.#promotions = [];
+    this.#membershipDiscount = 0;
   }
 
   setProductList(products) {
@@ -133,6 +135,28 @@ class StoreService {
     this.#orders
       .find((order) => order.getName() === regularPricePaymentProduct.getName())
       .removeRegularPriceQuantity(regularPricePaymentProduct);
+  }
+
+  handleMembershipApply(isMembershipApplied) {
+    if (isMembershipApplied === 'N') return;
+    if (isMembershipApplied === 'Y') {
+      this.#membershipDiscount = this.#calculateMembershipDiscount();
+      return;
+    }
+    validator.invalidCharacter();
+  }
+
+  #calculateMembershipDiscount() {
+    let discount =
+      this.#orders
+        .filter((order) => order.getPromotion() === '')
+        .reduce((acc, order) => acc + order.getTotalPrice(), 0) * 0.3;
+    if (discount > 8000) discount = 8000;
+    return discount;
+  }
+
+  getMembershipDiscount() {
+    return this.#membershipDiscount;
   }
 }
 

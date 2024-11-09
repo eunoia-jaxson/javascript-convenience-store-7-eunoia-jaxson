@@ -28,6 +28,10 @@ class OrderProduct {
     return this.#quantity;
   }
 
+  getPromotion() {
+    return this.#promotion;
+  }
+
   getPromotionQuantity() {
     return this.#promotionQuantity;
   }

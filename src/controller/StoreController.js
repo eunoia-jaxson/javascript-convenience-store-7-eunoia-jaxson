@@ -15,7 +15,7 @@ class StoreController {
     await this.#enterOrder();
     await this.confirmIncludeUnmetPromotionQuantity();
     await this.confirmRegularPricePayment();
-    OutputView.printOrders(StoreService.getOrderList());
+    await this.confirmMembership();
   }
 
   async #enterOrder() {
@@ -67,6 +67,17 @@ class StoreController {
         regularPriceProducts[i].getRegularPriceQuantity(),
       );
       await StoreService.handleRegularPricePayment(regularPricePayment, regularPriceProducts[i]);
+    }
+  }
+
+  async confirmMembership() {
+    try {
+      const isMembershipApplied = await InputView.readMembershipApply();
+      StoreService.handleMembershipApply(isMembershipApplied);
+      return null;
+    } catch (error) {
+      OutputView.print(error.message);
+      return this.confirmMembership();
     }
   }
 }

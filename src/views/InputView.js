@@ -27,6 +27,11 @@ const InputView = {
     );
     return input;
   },
+
+  async readMembershipApply() {
+    const input = await Console.readLineAsync(SYSTEM_MESSAGES.MEMBERSHIP_DISCOUNT);
+    return input;
+  },
 };
 
 export default InputView;
