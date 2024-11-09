@@ -7,14 +7,12 @@ import OrderProduct from '../models/OrderProduct.js';
 class StoreService {
   #products;
   #orders;
-  #today;
   #promotions;
   #membershipDiscount;
 
   constructor() {
     this.#products = [];
     this.#orders = [];
-    this.#today = DateTimes.now();
     this.#promotions = [];
     this.#membershipDiscount = 0;
   }
@@ -26,7 +24,7 @@ class StoreService {
   setPromotionList(promotions) {
     this.#promotions = PromotionConverter.convertPromotionList(
       promotions.slice(1, -1),
-      this.#today,
+      DateTimes.now(),
     );
   }
 
@@ -35,7 +33,7 @@ class StoreService {
   }
 
   getOrderList() {
-    return this.#orders;
+    return ProductConverter.convertOrderProduct(this.#orders);
   }
 
   setOrderList(orders) {
@@ -75,8 +73,10 @@ class StoreService {
 
   getUnmetPromotionQuantity() {
     return this.#orders.filter((order) => {
-      const [product, promotion] = order.preprocessingFilter(this.#products, this.#promotions);
+      const product = order.preprocessingFilterProduct(this.#products);
       if (product === null) return false;
+      const promotion = order.preprocessingFilterPromotion(this.#promotions, product);
+      if (promotion === null) return false;
       order.setPromotionQuantity(promotion.buy);
       return this.#unmetCondition(order.getQuantity(), product.stockQuantity, promotion.buy);
     });
@@ -96,13 +96,19 @@ class StoreService {
   }
 
   getRegularPricePaymentProducts() {
-    const regularPricePaymentProducts = this.#orders.filter((order) => {
-      const [product, promotion] = order.preprocessingFilter(this.#products, this.#promotions);
-      if (product === null) return false;
-      return this.#condition(order, product.stockQuantity, promotion.buy);
-    });
+    const regularPricePaymentProducts = this.#filteredOrders();
     this.#regularPricePayment(regularPricePaymentProducts);
     return regularPricePaymentProducts;
+  }
+
+  #filteredOrders() {
+    return this.#orders.filter((order) => {
+      const product = order.preprocessingFilterProduct(this.#products);
+      if (product === null) return false;
+      const promotion = order.preprocessingFilterPromotion(this.#promotions, product);
+      if (promotion === null) return false;
+      return this.#condition(order, product.stockQuantity, promotion.buy);
+    });
   }
 
   #condition(order, stockQuantity, buy) {
@@ -115,8 +121,11 @@ class StoreService {
 
   #regularPricePayment(regularPricePaymentProducts) {
     regularPricePaymentProducts.forEach((order) => {
-      const [product, promotion] = order.preprocessingFilter(this.#products, this.#promotions);
-      if (product !== null) order.setRegularPriceQuantity(product.stockQuantity, promotion.buy);
+      const product = order.preprocessingFilterProduct(this.#products);
+      const promotion = order.preprocessingFilterPromotion(this.#promotions, product);
+      if (product !== null && promotion !== null) {
+        order.setRegularPriceQuantity(product.stockQuantity, promotion.buy);
+      }
     });
   }
 
@@ -157,6 +166,18 @@ class StoreService {
 
   getMembershipDiscount() {
     return this.#membershipDiscount;
+  }
+
+  getTotalCount() {
+    return this.#orders.reduce((acc, order) => acc + order.getQuantity(), 0);
+  }
+
+  getTotalPrice() {
+    return this.#orders.reduce((acc, order) => acc + order.getTotalPrice(), 0);
+  }
+
+  getPromotionPrice() {
+    return this.#orders.reduce((acc, order) => acc + order.getPromotionPrice(), 0);
   }
 }
 

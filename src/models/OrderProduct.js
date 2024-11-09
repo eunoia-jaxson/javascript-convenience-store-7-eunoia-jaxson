@@ -16,16 +16,16 @@ class OrderProduct {
     this.#regularPriceQuantity = 0;
   }
 
-  toString() {
-    return `- ${this.#name} ${this.#unitPrice.toLocaleString()}원 ${this.#quantity.toLocaleString()}개 ${this.#promotion}`;
-  }
-
   getName() {
     return this.#name;
   }
 
   getQuantity() {
     return this.#quantity;
+  }
+
+  setQuantity(quantity) {
+    this.#quantity += quantity;
   }
 
   getPromotion() {
@@ -42,6 +42,10 @@ class OrderProduct {
 
   getTotalPrice() {
     return this.#quantity * this.#unitPrice;
+  }
+
+  getPromotionPrice() {
+    return this.#promotionQuantity * this.#unitPrice;
   }
 
   setPromotionQuantity(buy) {
@@ -61,15 +65,20 @@ class OrderProduct {
     this.#quantity -= this.#regularPriceQuantity;
   }
 
-  preprocessingFilter(products, promotions) {
+  preprocessingFilterProduct(products) {
     const orderProduct = products.find(
       (product) => product.promotion !== '' && product.name === this.#name,
     );
-    if (orderProduct === undefined) return [null];
+    if (orderProduct === undefined) return null;
+    return orderProduct;
+  }
+
+  preprocessingFilterPromotion(promotions, orderProduct) {
     const productPromotion = promotions.find(
       (promotion) => promotion.name === orderProduct.promotion,
     );
-    return [orderProduct, productPromotion];
+    if (productPromotion === undefined) return null;
+    return productPromotion;
   }
 
   createRegularProduct() {

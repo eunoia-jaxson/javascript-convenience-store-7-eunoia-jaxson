@@ -42,6 +42,16 @@ class ProductConverter {
       promotion: '',
     });
   }
+
+  convertOrderProduct(orders) {
+    orders.forEach((order, index) => {
+      if (orders[index + 1] && order.getName() === orders[index + 1].getName()) {
+        order.setQuantity(orders[index + 1].getQuantity());
+        orders.splice(index + 1, 1);
+      }
+    });
+    return orders;
+  }
 }
 
 export default new ProductConverter();

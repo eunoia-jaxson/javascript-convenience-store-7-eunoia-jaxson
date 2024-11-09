@@ -9,6 +9,7 @@ class StoreController {
     StoreService.setPromotionList(await InputView.readPromotionsFromFile());
     OutputView.printProducts(StoreService.getProductList());
     await this.#enterInputs();
+    this.#printReceipt();
   }
 
   async #enterInputs() {
@@ -79,6 +80,16 @@ class StoreController {
       OutputView.print(error.message);
       return this.confirmMembership();
     }
+  }
+
+  #printReceipt() {
+    OutputView.printReceipt(
+      StoreService.getOrderList(),
+      StoreService.getTotalCount(),
+      StoreService.getTotalPrice(),
+      StoreService.getPromotionPrice(),
+      StoreService.getMembershipDiscount(),
+    );
   }
 }
 

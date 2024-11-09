@@ -21,17 +21,20 @@ const SYSTEM_MESSAGES = Object.freeze({
 });
 
 const RECEIPT = Object.freeze({
-  HEADER: '===========W 편의점=============',
+  HEADER: '\n===========W 편의점===========',
   PRODUCT_LIST_TITLE: '상품명\t\t수량\t금액',
   PRODUCT: (product, quantity, price) =>
     `${product}\t\t${quantity.toLocaleString()}\t${price.toLocaleString()}`,
-  GIFT_HEADER: '===========증\t정=============',
+  PRODUCT_LONG: (product, quantity, price) =>
+    `${product}\t${quantity.toLocaleString()}\t${price.toLocaleString()}`,
+  GIFT_HEADER: '===========증\t정============',
   GIFT: (product, quantity) => `${product}\t\t${quantity.toLocaleString()}`,
+  GIFT_LONG: (product, quantity) => `${product}\t${quantity.toLocaleString()}`,
   FOOTER: '==============================',
   TOTAL_PURCHASE: (quantity, price) =>
-    `총구매액\t\t${quantity.toLocaleString()}\t${price.toLocaleString()}`,
-  EVENT_DISCOUNT: (price) => `행사할인\t\t\t-${price.toLocaleString()}`,
-  MEMBERSHIP_DISCOUNT: (price) => `멤버십할인\t\t\t-${price.toLocaleString()}`,
+    `총구매액\t${quantity.toLocaleString()}\t${price.toLocaleString()}`,
+  EVENT_DISCOUNT: (price) => `행사할인\t\t-${price.toLocaleString()}`,
+  MEMBERSHIP_DISCOUNT: (price) => `멤버십할인\t\t-${price.toLocaleString()}`,
   FINAL_AMOUNT: (price) => `내실돈\t\t\t${price.toLocaleString()}`,
 });
 
