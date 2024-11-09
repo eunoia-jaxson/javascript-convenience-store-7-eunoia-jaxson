@@ -32,6 +32,11 @@ const InputView = {
     const input = await Console.readLineAsync(SYSTEM_MESSAGES.MEMBERSHIP_DISCOUNT);
     return input;
   },
+
+  async readRetry() {
+    const input = await Console.readLineAsync(SYSTEM_MESSAGES.ADDITIONAL_PURCHASE);
+    return input;
+  },
 };
 
 export default InputView;

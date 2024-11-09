@@ -87,12 +87,11 @@ class StoreService {
   }
 
   async handleIncludeUnmet(includeUnmet, unmetOrderName) {
+    validator.invalidCharacter(includeUnmet);
     if (includeUnmet === 'N') return;
     if (includeUnmet === 'Y') {
       this.#orders.find((order) => order.getName() === unmetOrderName).givePromotionQuantity();
-      return;
     }
-    validator.invalidCharacter();
   }
 
   getRegularPricePaymentProducts() {
@@ -130,14 +129,13 @@ class StoreService {
   }
 
   async handleRegularPricePayment(regularPricePayment, regularPricePaymentProduct) {
+    validator.invalidCharacter(regularPricePayment);
     this.#removeRegularPriceQuantity(regularPricePaymentProduct);
     if (regularPricePayment === 'N') return;
     if (regularPricePayment === 'Y') {
       this.#orders.push(regularPricePaymentProduct.createRegularProduct());
       this.#orders.sort((a, b) => a.getName() - b.getName());
-      return;
     }
-    validator.invalidCharacter();
   }
 
   #removeRegularPriceQuantity(regularPricePaymentProduct) {
@@ -147,12 +145,11 @@ class StoreService {
   }
 
   handleMembershipApply(isMembershipApplied) {
+    validator.invalidCharacter(isMembershipApplied);
     if (isMembershipApplied === 'N') return;
     if (isMembershipApplied === 'Y') {
       this.#membershipDiscount = this.#calculateMembershipDiscount();
-      return;
     }
-    validator.invalidCharacter();
   }
 
   #calculateMembershipDiscount() {
@@ -178,6 +175,11 @@ class StoreService {
 
   getPromotionPrice() {
     return this.#orders.reduce((acc, order) => acc + order.getPromotionPrice(), 0);
+  }
+
+  validateRepurchase(purchase) {
+    validator.invalidCharacter(purchase);
+    return purchase;
   }
 }
 

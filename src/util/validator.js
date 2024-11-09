@@ -32,8 +32,10 @@ const validator = Object.freeze({
     }
   },
 
-  invalidCharacter() {
-    throw new Error(ERROR_MESSAGES.INVALID_INPUT);
+  invalidCharacter(character) {
+    if (character !== 'Y' && character !== 'N') {
+      throw new Error(ERROR_MESSAGES.INVALID_INPUT);
+    }
   },
 });
 
