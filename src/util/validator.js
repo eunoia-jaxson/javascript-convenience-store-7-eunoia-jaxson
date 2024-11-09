@@ -16,7 +16,6 @@ const validator = Object.freeze({
 
   duplicateProduct(productNames) {
     if (productNames.length !== new Set(productNames).size) {
-      console.log(productNames);
       throw new Error(ERROR_MESSAGES.INVALID_INPUT);
     }
   },

@@ -19,24 +19,24 @@ class StoreController {
   }
 
   async #enterOrder() {
-    while (true) {
-      try {
-        StoreService.setOrderList(StoreService.validateOrderInput(await InputView.readItem()));
-        break; // 성공 시 루프 종료
-      } catch (error) {
-        OutputView.print(error.message); // 에러 발생 시 메시지 출력 후 반복
-      }
+    try {
+      const orderInput = await InputView.readItem();
+      StoreService.setOrderList(StoreService.validateOrderInput(orderInput));
+      return null;
+    } catch (error) {
+      OutputView.print(error.message);
+      return this.#enterOrder();
     }
   }
 
   async confirmIncludeUnmetPromotionQuantity() {
-    while (true) {
-      try {
-        await this.#iterationUnmetPromotions(StoreService.getUnmetPromotionQuantity());
-        break;
-      } catch (error) {
-        OutputView.print(error.message);
-      }
+    try {
+      const unmetPromotionQuantitys = StoreService.getUnmetPromotionQuantity();
+      await this.#iterationUnmetPromotions(unmetPromotionQuantitys);
+      return null;
+    } catch (error) {
+      OutputView.print(error.message);
+      return this.confirmIncludeUnmetPromotionQuantity();
     }
   }
 
@@ -50,13 +50,13 @@ class StoreController {
   }
 
   async confirmRegularPricePayment() {
-    while (true) {
-      try {
-        await this.#iterationRegularPricePayment(StoreService.getRegularPricePaymentProducts());
-        break;
-      } catch (error) {
-        OutputView.print(error.message);
-      }
+    try {
+      const regularPriceProducts = StoreService.getRegularPricePaymentProducts();
+      await this.#iterationRegularPricePayment(regularPriceProducts);
+      return null;
+    } catch (error) {
+      OutputView.print(error.message);
+      return this.confirmRegularPricePayment();
     }
   }
 
