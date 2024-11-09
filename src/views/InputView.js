@@ -21,9 +21,9 @@ const InputView = {
     return input;
   },
 
-  async readRegularPricePayment(regularPricePayment) {
+  async readRegularPricePayment(productName, productQuantity) {
     const input = await Console.readLineAsync(
-      SYSTEM_MESSAGES.PROMOTION_OUT_OF_STOCK(regularPricePayment[0], regularPricePayment[1]),
+      SYSTEM_MESSAGES.PROMOTION_OUT_OF_STOCK(productName, productQuantity),
     );
     return input;
   },

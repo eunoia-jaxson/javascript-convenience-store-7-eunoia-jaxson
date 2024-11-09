@@ -3,16 +3,14 @@ class ProductConverter {
     const products = rawProducts.map((product) => {
       const [name, unitPrice, stockQuantity, promotion] = product.split(',');
       if (promotion === 'null') {
-        return this.product(name, unitPrice, stockQuantity, '');
+        return this.#product(name, unitPrice, stockQuantity, '');
       }
-      return this.product(name, unitPrice, stockQuantity, promotion);
+      return this.#product(name, unitPrice, stockQuantity, promotion);
     });
-
-    return this.outOfStock(products);
+    return this.#outOfStock(products);
   }
 
-  // eslint-disable-next-line max-params
-  product(name, unitPrice, stockQuantity, promotion) {
+  #product(name, unitPrice, stockQuantity, promotion) {
     return {
       name,
       unitPrice: Number(unitPrice),
@@ -21,20 +19,22 @@ class ProductConverter {
     };
   }
 
-  outOfStock(products) {
+  #outOfStock(products) {
     products.forEach((product, index) => {
-      if (
-        products[index + 1] &&
-        product.name !== products[index + 1].name &&
-        product.promotion !== ''
-      ) {
-        this.spliceArray(products, index, product);
+      if (this.#condition(products, index, product)) {
+        this.#spliceArray(products, index, product);
       }
     });
     return products;
   }
 
-  spliceArray(products, index, product) {
+  #condition(products, index, product) {
+    return (
+      products[index + 1] && product.name !== products[index + 1].name && product.promotion !== ''
+    );
+  }
+
+  #spliceArray(products, index, product) {
     products.splice(index + 1, 0, {
       name: product.name,
       unitPrice: product.unitPrice,

@@ -2,19 +2,19 @@ import StoreService from '../src/service/StoreService.js';
 import { ERROR_MESSAGES } from '../src/constants/constants.js';
 
 describe('사용자 구매 목록 유효성 검사', () => {
-  let productList;
+  let products;
 
   beforeEach(() => {
-    // 테스트에 사용할 기본 productList
-    productList = [
+    // 테스트에 사용할 기본 products
+    products = [
       '더미,0,0,null', // 앞에 더미 데이터
       '사이다,1000,5,null', // 실제 데이터
       '감자칩,1500,10,null', // 실제 데이터
       '더미,0,0,null', // 뒤에 더미 데이터
     ];
 
-    // StoreService에 productList 설정
-    StoreService.setProductList(productList);
+    // StoreService에 products 설정
+    StoreService.setProductList(products);
   });
 
   test.each([
@@ -52,8 +52,8 @@ describe('사용자 구매 목록 유효성 검사', () => {
         StoreService.validateOrderInput(orderInput);
       }).toThrow(error);
     } else {
-      const orderList = StoreService.validateOrderInput(orderInput);
-      expect(orderList).toEqual(expectedOrderList);
+      const orders = StoreService.validateOrderInput(orderInput);
+      expect(orders).toEqual(expectedOrderList);
     }
   });
 });

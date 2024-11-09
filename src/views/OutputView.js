@@ -12,20 +12,33 @@ const OutputView = {
     this.print(SYSTEM_MESSAGES.AVAILABLE_PRODUCTS);
   },
 
-  async printProducts(products) {
+  printProducts(products) {
     products.forEach((product) => {
       if (product.stockQuantity === 0) {
-        this.print(
-          `- ${product.name} ${product.unitPrice.toLocaleString()}원 재고 없음 ${product.promotion}`,
-        );
+        this.printZeroStockProduct(product);
         return;
       }
-      this.print(
-        `- ${product.name} ${product.unitPrice.toLocaleString()}원 ${product.stockQuantity.toLocaleString()}개 ${product.promotion}`,
-      );
+      this.printProduct(product);
     });
   },
-  // ...
+
+  printZeroStockProduct(product) {
+    this.print(
+      `- ${product.name} ${product.unitPrice.toLocaleString()}원 재고 없음 ${product.promotion}`,
+    );
+  },
+
+  printProduct(product) {
+    this.print(
+      `- ${product.name} ${product.unitPrice.toLocaleString()}원 ${product.stockQuantity.toLocaleString()}개 ${product.promotion}`,
+    );
+  },
+
+  printOrders(orders) {
+    orders.forEach((order) => {
+      this.print(order.toString());
+    });
+  },
 };
 
 export default OutputView;

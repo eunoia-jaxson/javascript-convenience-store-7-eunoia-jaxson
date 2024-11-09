@@ -8,9 +8,16 @@ const validator = Object.freeze({
     }
   },
 
-  productNotfound(orderList, productNames) {
-    if (orderList.some((order) => !productNames.includes(order.name))) {
+  productNotFound(orders, productNames) {
+    if (orders.some((order) => !productNames.includes(order.name))) {
       throw new Error(ERROR_MESSAGES.PRODUCT_NOT_FOUND);
+    }
+  },
+
+  duplicateProduct(productNames) {
+    if (productNames.length !== new Set(productNames).size) {
+      console.log(productNames);
+      throw new Error(ERROR_MESSAGES.INVALID_INPUT);
     }
   },
 
@@ -20,8 +27,8 @@ const validator = Object.freeze({
     }
   },
 
-  quantityMoreThanZero(orderList) {
-    if (orderList.some((order) => order.quantity <= 0)) {
+  quantityMoreThanZero(orders) {
+    if (orders.some((order) => order.quantity <= 0)) {
       throw new Error(ERROR_MESSAGES.INVALID_INPUT);
     }
   },
