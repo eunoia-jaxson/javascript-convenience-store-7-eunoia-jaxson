@@ -8,6 +8,7 @@ class StoreController {
   async start() {
     while (this.#purchase === 'Y') {
       await this.#mainFlow();
+      await OutputView.fileUpdate(StoreService.productsStock());
       await this.#enterRepurchase();
       OutputView.print('');
     }

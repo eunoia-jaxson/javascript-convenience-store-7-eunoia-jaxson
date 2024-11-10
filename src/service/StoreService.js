@@ -77,7 +77,7 @@ class StoreService {
       if (product === null) return false;
       const promotion = order.preprocessingFilterPromotion(this.#promotions, product);
       if (promotion === null) return false;
-      order.setPromotionQuantity(promotion.buy);
+      order.setPromotionQuantity(product.stockQuantity, promotion.buy);
       return this.#unmetCondition(order.getQuantity(), product.stockQuantity, promotion.buy);
     });
   }
@@ -112,8 +112,8 @@ class StoreService {
 
   #condition(order, stockQuantity, buy) {
     return (
-      order.getPromotionQuantity() > Math.floor(stockQuantity / (buy + 1)) ||
-      (order.getPromotionQuantity() === Math.floor(stockQuantity / (buy + 1)) &&
+      Math.floor(order.getQuantity() / (buy + 1)) > Math.floor(stockQuantity / (buy + 1)) ||
+      (Math.floor(order.getQuantity() / (buy + 1)) === Math.floor(stockQuantity / (buy + 1)) &&
         order.getQuantity() % (buy + 1) !== 0)
     );
   }
@@ -179,7 +179,24 @@ class StoreService {
 
   validateRepurchase(purchase) {
     validator.invalidCharacter(purchase);
+    this.#membershipDiscount = 0;
     return purchase;
+  }
+
+  productsStock() {
+    this.#productsStockUpdate();
+    return ProductConverter.convertProductStock(this.#products);
+  }
+
+  #productsStockUpdate() {
+    this.#orders.forEach((order) => {
+      const filteredProducts = this.#products.filter((product) => product.name === order.getName());
+      filteredProducts[0].stockQuantity -= order.getQuantity();
+      if (filteredProducts[0].stockQuantity < 0) {
+        filteredProducts[1].stockQuantity += filteredProducts[0].stockQuantity;
+        filteredProducts[0].stockQuantity -= filteredProducts[0].stockQuantity;
+      }
+    });
   }
 }
 

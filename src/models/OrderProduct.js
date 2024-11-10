@@ -16,6 +16,10 @@ class OrderProduct {
     this.#regularPriceQuantity = 0;
   }
 
+  toString() {
+    return `- ${this.#name} ${this.#unitPrice.toLocaleString()}원 ${this.#quantity.toLocaleString()}개 ${this.#promotion}`;
+  }
+
   getName() {
     return this.#name;
   }
@@ -48,8 +52,12 @@ class OrderProduct {
     return this.#promotionQuantity * this.#unitPrice;
   }
 
-  setPromotionQuantity(buy) {
-    this.#promotionQuantity = Math.floor(this.#quantity / (buy + 1));
+  setPromotionQuantity(stockQuantity, buy) {
+    if (this.#quantity <= stockQuantity) {
+      this.#promotionQuantity = Math.floor(this.#quantity / (buy + 1));
+      return;
+    }
+    this.#promotionQuantity = Math.floor(stockQuantity / (buy + 1));
   }
 
   setRegularPriceQuantity(stockQuantity, buy) {
