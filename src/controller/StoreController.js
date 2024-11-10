@@ -3,15 +3,13 @@ import OutputView from '../views/OutputView.js';
 import StoreService from '../service/StoreService.js';
 
 class StoreController {
-  #purchase = 'Y';
-
   async start() {
+    let purchase = 'Y';
     StoreService.setProductList(await InputView.readProductsFromFile());
     StoreService.setPromotionList(await InputView.readPromotionsFromFile());
-    while (this.#purchase === 'Y') {
+    while (purchase === 'Y') {
       await this.#mainFlow();
-      StoreService.productsStockUpdate();
-      await this.#enterRepurchase();
+      purchase = await this.#enterRepurchase();
       OutputView.print('');
     }
   }
@@ -21,6 +19,7 @@ class StoreController {
     OutputView.printProducts(StoreService.getProductList());
     await this.#enterInputs();
     this.#printReceipt();
+    StoreService.productsStockUpdate();
   }
 
   async #enterInputs() {
@@ -106,8 +105,7 @@ class StoreController {
   async #enterRepurchase() {
     try {
       const purchase = await InputView.readRetry();
-      this.#purchase = StoreService.validateRepurchase(purchase);
-      return null;
+      return StoreService.validateRepurchase(purchase);
     } catch (error) {
       OutputView.print(error.message);
       return this.#enterRepurchase();

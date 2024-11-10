@@ -1,10 +1,10 @@
-import { Console } from '@woowacourse/mission-utils';
+import { MissionUtils } from '@woowacourse/mission-utils';
 // import fs from 'fs';
 import { RECEIPT, SYSTEM_MESSAGES } from '../constants/constants.js';
 
 const OutputView = {
   print(message) {
-    Console.print(message);
+    MissionUtils.Console.print(message);
   },
 
   welcome() {
@@ -74,7 +74,7 @@ const OutputView = {
     this.print(RECEIPT.TOTAL_PURCHASE(totalCount, totalPrice));
     this.print(RECEIPT.EVENT_DISCOUNT(promotionPrice));
     this.print(RECEIPT.MEMBERSHIP_DISCOUNT(membershipDiscount));
-    Console.print(RECEIPT.FINAL_AMOUNT(totalPrice - promotionPrice - membershipDiscount));
+    this.print(RECEIPT.FINAL_AMOUNT(totalPrice - promotionPrice - membershipDiscount));
   },
 
   // async fileUpdate(stock) {

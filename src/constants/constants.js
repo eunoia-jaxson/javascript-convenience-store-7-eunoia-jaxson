@@ -8,7 +8,7 @@ const ERROR_MESSAGES = Object.freeze({
 });
 
 const SYSTEM_MESSAGES = Object.freeze({
-  WELCOME: '안녕하세요. W편의점입니다.',
+  WELCOME: '\n안녕하세요. W편의점입니다.',
   AVAILABLE_PRODUCTS: '현재 보유하고 있는 상품입니다.\n',
   ENTER_PRODUCT_AND_QUANTITY:
     '\n구매하실 상품명과 수량을 입력해 주세요. (예: [사이다-2],[감자칩-1])\n',
