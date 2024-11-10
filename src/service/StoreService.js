@@ -183,12 +183,12 @@ class StoreService {
     return purchase;
   }
 
-  productsStock() {
-    this.#productsStockUpdate();
-    return ProductConverter.convertProductStock(this.#products);
-  }
+  // productsStock() {
+  //   this.#productsStockUpdate();
+  //   return ProductConverter.convertProductStock(this.#products);
+  // }
 
-  #productsStockUpdate() {
+  productsStockUpdate() {
     this.#orders.forEach((order) => {
       const filteredProducts = this.#products.filter((product) => product.name === order.getName());
       filteredProducts[0].stockQuantity -= order.getQuantity();

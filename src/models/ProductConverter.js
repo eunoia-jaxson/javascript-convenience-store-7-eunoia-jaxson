@@ -53,16 +53,16 @@ class ProductConverter {
     return orders;
   }
 
-  convertProductStock(products) {
-    return `name,price,quantity,promotion\n${products
-      .map((product) => {
-        if (product.promotion !== '') {
-          return `${product.name},${product.unitPrice},${product.stockQuantity},${product.promotion}`;
-        }
-        return `${product.name},${product.unitPrice},${product.stockQuantity},null`;
-      })
-      .join('\n')}\n`;
-  }
+  // convertProductStock(products) {
+  //   return `name,price,quantity,promotion\n${products
+  //     .map((product) => {
+  //       if (product.promotion !== '') {
+  //         return `${product.name},${product.unitPrice},${product.stockQuantity},${product.promotion}`;
+  //       }
+  //       return `${product.name},${product.unitPrice},${product.stockQuantity},null`;
+  //     })
+  //     .join('\n')}\n`;
+  // }
 }
 
 export default new ProductConverter();

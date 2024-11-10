@@ -1,5 +1,5 @@
 import { Console } from '@woowacourse/mission-utils';
-import fs from 'fs';
+// import fs from 'fs';
 import { RECEIPT, SYSTEM_MESSAGES } from '../constants/constants.js';
 
 const OutputView = {
@@ -77,9 +77,9 @@ const OutputView = {
     Console.print(RECEIPT.FINAL_AMOUNT(totalPrice - promotionPrice - membershipDiscount));
   },
 
-  async fileUpdate(stock) {
-    fs.writeFileSync('public/products.md', stock);
-  },
+  // async fileUpdate(stock) {
+  //   fs.writeFileSync('public/products.md', stock);
+  // },
 };
 
 export default OutputView;

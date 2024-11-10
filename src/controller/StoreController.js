@@ -6,9 +6,11 @@ class StoreController {
   #purchase = 'Y';
 
   async start() {
+    StoreService.setProductList(await InputView.readProductsFromFile());
+    StoreService.setPromotionList(await InputView.readPromotionsFromFile());
     while (this.#purchase === 'Y') {
       await this.#mainFlow();
-      await OutputView.fileUpdate(StoreService.productsStock());
+      StoreService.productsStockUpdate();
       await this.#enterRepurchase();
       OutputView.print('');
     }
@@ -16,8 +18,6 @@ class StoreController {
 
   async #mainFlow() {
     OutputView.welcome();
-    StoreService.setProductList(await InputView.readProductsFromFile());
-    StoreService.setPromotionList(await InputView.readPromotionsFromFile());
     OutputView.printProducts(StoreService.getProductList());
     await this.#enterInputs();
     this.#printReceipt();
