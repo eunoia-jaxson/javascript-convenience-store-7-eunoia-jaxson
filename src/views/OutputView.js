@@ -1,5 +1,4 @@
 import { MissionUtils } from '@woowacourse/mission-utils';
-// import fs from 'fs';
 import { RECEIPT, SYSTEM_MESSAGES } from '../constants/constants.js';
 
 const OutputView = {
@@ -34,10 +33,16 @@ const OutputView = {
     );
   },
 
-  printReceipt(orders, totalCount, totalPrice, promotionPrice, membershipDiscount) {
+  printOrders(convertedOrders) {
     this.print(RECEIPT.HEADER);
-    this.printOrderProducts(orders);
+    this.printOrderProducts(convertedOrders);
+  },
+
+  printPromotions(orders) {
     this.checkLength(orders.filter((order) => order.getPromotionQuantity() > 0));
+  },
+
+  printFooter(totalCount, totalPrice, promotionPrice, membershipDiscount) {
     this.printTotalPrice(totalCount, totalPrice, promotionPrice, membershipDiscount);
   },
 
@@ -76,10 +81,6 @@ const OutputView = {
     this.print(RECEIPT.MEMBERSHIP_DISCOUNT(membershipDiscount));
     this.print(RECEIPT.FINAL_AMOUNT(totalPrice - promotionPrice - membershipDiscount));
   },
-
-  // async fileUpdate(stock) {
-  //   fs.writeFileSync('public/products.md', stock);
-  // },
 };
 
 export default OutputView;

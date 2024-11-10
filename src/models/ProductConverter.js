@@ -1,3 +1,5 @@
+import OrderProduct from './OrderProduct.js';
+
 class ProductConverter {
   convertProductList(rawProducts) {
     const products = rawProducts.map((product) => {
@@ -44,25 +46,31 @@ class ProductConverter {
   }
 
   convertOrderProduct(orders) {
-    orders.forEach((order, index) => {
-      if (orders[index + 1] && order.getName() === orders[index + 1].getName()) {
-        order.setQuantity(orders[index + 1].getQuantity());
-        orders.splice(index + 1, 1);
-      }
-    });
-    return orders;
+    return Object.values(
+      orders.reduce((acc, product) => {
+        const name = product.getName();
+        return this.#convertedOrder(acc, product, name);
+      }, {}),
+    );
   }
 
-  // convertProductStock(products) {
-  //   return `name,price,quantity,promotion\n${products
-  //     .map((product) => {
-  //       if (product.promotion !== '') {
-  //         return `${product.name},${product.unitPrice},${product.stockQuantity},${product.promotion}`;
-  //       }
-  //       return `${product.name},${product.unitPrice},${product.stockQuantity},null`;
-  //     })
-  //     .join('\n')}\n`;
-  // }
+  #convertedOrder(acc, product, name) {
+    if (acc[name]) {
+      acc[name].setQuantity(product.getQuantity());
+      return acc;
+    }
+    acc[name] = this.#newOrderProduct(product);
+    return acc;
+  }
+
+  #newOrderProduct(product) {
+    return new OrderProduct(
+      product.getName(),
+      product.getUnitPrice(),
+      product.getQuantity(),
+      product.getPromotion(),
+    );
+  }
 }
 
 export default new ProductConverter();

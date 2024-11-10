@@ -6,7 +6,6 @@ class OrderProduct {
   #promotionQuantity;
   #regularPriceQuantity;
 
-  // eslint-disable-next-line max-params
   constructor(name, unitPrice, quantity, promotion) {
     this.#name = name;
     this.#unitPrice = unitPrice;
@@ -22,6 +21,10 @@ class OrderProduct {
 
   getName() {
     return this.#name;
+  }
+
+  getUnitPrice() {
+    return this.#unitPrice;
   }
 
   getQuantity() {

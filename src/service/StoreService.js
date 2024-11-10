@@ -33,6 +33,10 @@ class StoreService {
   }
 
   getOrderList() {
+    return this.#orders;
+  }
+
+  getConvertedOrderList() {
     return ProductConverter.convertOrderProduct(this.#orders);
   }
 
@@ -134,7 +138,6 @@ class StoreService {
     if (regularPricePayment === 'N') return;
     if (regularPricePayment === 'Y') {
       this.#orders.push(regularPricePaymentProduct.createRegularProduct());
-      this.#orders.sort((a, b) => a.getName() - b.getName());
     }
   }
 
@@ -182,11 +185,6 @@ class StoreService {
     this.#membershipDiscount = 0;
     return purchase;
   }
-
-  // productsStock() {
-  //   this.#productsStockUpdate();
-  //   return ProductConverter.convertProductStock(this.#products);
-  // }
 
   productsStockUpdate() {
     this.#orders.forEach((order) => {

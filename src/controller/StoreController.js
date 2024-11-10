@@ -93,8 +93,9 @@ class StoreController {
   }
 
   #printReceipt() {
-    OutputView.printReceipt(
-      StoreService.getOrderList(),
+    OutputView.printOrders(StoreService.getConvertedOrderList());
+    OutputView.printPromotions(StoreService.getOrderList());
+    OutputView.printFooter(
       StoreService.getTotalCount(),
       StoreService.getTotalPrice(),
       StoreService.getPromotionPrice(),
